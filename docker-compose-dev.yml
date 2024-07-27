@@ -12,6 +12,7 @@ services:
       - backend
 
   backend:
+    image: api-backend-flask
     build:
       context: .
     env_file: ".env"

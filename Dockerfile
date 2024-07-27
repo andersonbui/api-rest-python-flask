@@ -8,6 +8,6 @@ COPY ./requirements.txt /application
 RUN pip install --no-cache-dir -r ./requirements.txt
 
 # script de inicio
-COPY start.sh /start.sh
+COPY start-dev.sh /start-dev.sh
 
-CMD "./start.sh"
+CMD "./start-dev.sh"
