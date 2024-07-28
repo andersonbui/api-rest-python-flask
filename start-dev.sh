@@ -10,4 +10,4 @@ else
     sha256sum requirements.txt > req-SHA256SUMS
     pip install -r requirements.txt
 fi
-flask run --host=0.0.0.0 --debug --port ${FLASK_PORT:-5000}
+flask --app app run --host=0.0.0.0 --debug --port ${FLASK_PORT:-5000}

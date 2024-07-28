@@ -35,7 +35,6 @@ def cargar_datos():
     
     file = request.files.getlist('files')
     
-    
     dataStorage = DataStorage()
     enricher = DataEnricher()
     procesarArchivo = ProcesarArchivo(dataStorage, enricher)
@@ -44,8 +43,3 @@ def cargar_datos():
         return jsonify(resultado), 400
     
     return jsonify(resultado), 200
-
-
-# if __name__ == "__main__":
-#     app.run(host='0.0.0.0', port=os.environ.get("FLASK_SERVER_PORT", 5000), debug=True)
-    

@@ -1,10 +1,6 @@
-
-
-# from pymongo import MongoClient
+#!/usr/bin/env python
 from app.processors.FabricaProcessor import FabricaProcessor
 from app.processors.FileProcessor import FileProcessor
-from app.services.data_enricher import DataEnricher
-from app.db.data_storage import DataStorage
 
 
 
@@ -15,8 +11,8 @@ class ProcesarArchivo:
     _enricher = None
     
     def __init__(self, dataStorage, enricher):
-        self._dataStorage = dataStorage #DataStorage()
-        self._enricher = enricher #DataEnricher()
+        self._dataStorage = dataStorage
+        self._enricher = enricher
     
     @staticmethod
     def getExtension(filename):
@@ -31,10 +27,10 @@ class ProcesarArchivo:
     def run(self, file):
         """
             Summary:
-            Almacena archivos cargados de forma segura.
+            Procesa un archivos enviado por parámetro para extraer datos, agrega nuevos datos y almacenarlos en la base de datos.
 
             Explanation:
-            Almacena los archivos cargados de forma segura. Comprueba las extensiones de archivo, crea una carpeta de carga si no existe y guarda el archivo.
+            Basado en los datos del archivo pasado por parámetro comprueba las extensiones de archivo, extrae los datos y basado en diferentes estrategias procesa dicho archivo para agregar mas informacion y luego almacenarlos en la base de datos.
             Devuelve un estado de éxito si se almacena el archivo; de lo contrario, devuelve un mensaje de error.
                 
             Args:

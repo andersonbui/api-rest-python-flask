@@ -10,7 +10,6 @@ class DataEnricher:
             CategoryInfoAPIClient(),
             CurrenciesInfoAPIClient(),
             UsersInfoAPIClient(),
-            
             # Agrega aquí más clientes de APIs según se necesite
         ]
 

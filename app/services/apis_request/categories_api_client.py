@@ -10,7 +10,11 @@ class CategoryInfoAPIClient(BaseAPIClient):
         if not identifier:
             return {}
         api_url = f"https://rocketchatdev.keos.co/categories/{identifier}"
-        response = requests.get(api_url)
+        response = requests.get(api_url, timeout=5)
+        if (response.status_code == 502):
+            raise ConnectionError(
+                f"Api {api_url} no disponibles. status_code {response.status_code}"
+            )
         return {
             "name": response.json().get('name'),
         }

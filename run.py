@@ -1,8 +1,11 @@
 # -*- encoding: utf-8 -*-
 
+import os
 from app import create_app
 
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=os.environ.get("FLASK_SERVER_PORT", 5000), debug=True)
+
+    
