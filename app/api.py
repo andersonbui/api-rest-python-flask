@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from flask import request, jsonify, Blueprint, current_app
-import requests
 # from pymongo import MongoClient
 from app.processors.FabricaProcessor import FabricaProcessor
 from app.processors.FileProcessor import FileProcessor
+from app.services.apis_request.data_enricher import DataEnricher
 
 ALLOWED_EXTENSIONS = set(['xls', 'csv', 'text', 'jsonl'])
 
@@ -24,15 +24,15 @@ def todo():
     try:
         db = current_app.config['db']
     except:
-        return "Server not available"
-    return "Collecciones de bbd: " + str(db.list_collection_names())
+        return "Servicio no disponible"
+    return "API en funcionamiento"
+
 
 def query_external_api(row_list):
     for data in row_list:
-        api_url = f"https://dominio.com/items/{data['site']+data['id']}"
-        response = requests.get(api_url)
-        print("response"+str(response.json()))
-        return {"status": "success"}
+        enricher = DataEnricher()
+        enricher.enrich(data)
+    return row_list
 
 
 def procesar_archivo(file):
@@ -69,6 +69,7 @@ def procesar_archivo(file):
                 if(row == "" or row is None or row == []):
                     continue
                 result_api = query_external_api(row)
+                                
                 lista_datos.append({
                     "row": row,
                     "result_api": result_api
@@ -82,7 +83,8 @@ def procesar_archivo(file):
         return {"status": "success", "filename": lista_datos}
     
     return {"status":"error", "error": "No se encontró archivo en la petición"}
-    
+
+
 
 @routes.route('/cargar_datos_archivo', methods=['POST', 'GET'])
 def cargar_datos():
