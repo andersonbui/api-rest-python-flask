@@ -3,15 +3,15 @@ import requests
 
 from app.services.apis_request.base_api_clients import BaseAPIClient
 
-class CategoryInfoAPIClient(BaseAPIClient):
+class CurrenciesInfoAPIClient(BaseAPIClient):
     
     def fetch_additional_data(self, record):
-        identifier = record.get('category_id')
+        identifier = record.get('currency_id')
         if not identifier:
             return {}
-        api_url = f"https://rocketchatdev.keos.co/categories/{identifier}"
+        api_url = f"https://rocketchatdev.keos.co/currencies/{identifier}"
         response = requests.get(api_url)
         return {
-            "name": response.json().get('name'),
+            "description": response.json().get('description'),
         }
 

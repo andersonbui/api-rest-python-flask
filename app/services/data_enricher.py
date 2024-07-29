@@ -1,10 +1,16 @@
+from app.services.apis_request.categories_api_client import CategoryInfoAPIClient
+from app.services.apis_request.currencies_api_client import CurrenciesInfoAPIClient
 from app.services.apis_request.items_api_client import ItemsInfoAPIClient
+from app.services.apis_request.users_api_client import UsersInfoAPIClient
 
 class DataEnricher:
     def __init__(self):
         self.api_clients = [
             ItemsInfoAPIClient(),
-            #CategoryInfoAPIClient(),
+            CategoryInfoAPIClient(),
+            CurrenciesInfoAPIClient(),
+            UsersInfoAPIClient(),
+            
             # Agrega aquí más clientes de APIs según se necesite
         ]
 
