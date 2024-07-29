@@ -5,6 +5,7 @@ from flask import request, jsonify, Blueprint, current_app
 from app.processors.FabricaProcessor import FabricaProcessor
 from app.processors.FileProcessor import FileProcessor
 from app.services.data_enricher import DataEnricher
+from app.db.data_storage import DataStorage
 
 ALLOWED_EXTENSIONS = set(['xls', 'csv', 'text', 'jsonl'])
 
@@ -18,14 +19,14 @@ def allowedFile(filename):
     return '.' in filename and \
         getExtension(filename) in ALLOWED_EXTENSIONS
 
-@routes.route('/', methods=[ 'GET' ])
-def todo():
-    db = None
-    try:
-        db = current_app.config['db']
-    except:
-        return "Servicio no disponible"
-    return "API en funcionamiento"
+# @routes.route('/', methods=[ 'GET' ])
+# def todo():
+#     db = None
+#     try:
+#         db = current_app.config['db']
+#     except:
+#         return "Servicio no disponible"
+#     return "API en funcionamiento"
 
 
 def query_external_api(row_list):
@@ -53,6 +54,8 @@ def procesar_archivo(file):
     
     # filename = "-"
     lista_datos = []
+    fdataStorage = DataStorage()
+    
     for f in file:
         if not allowedFile(f.filename):
             extension = f.filename.split('.')[1].upper()
@@ -68,11 +71,12 @@ def procesar_archivo(file):
                 print(row)
                 if(row == "" or row is None or row == []):
                     continue
+                
                 result_api = query_external_api(row)
-                                
+                data = fdataStorage.almacenar_lista_datos(result_api)
+                
                 lista_datos.append({
-                    "row": row,
-                    "result_api": result_api
+                    "row": result_api
                 })
                 break #TODO
             
@@ -83,7 +87,6 @@ def procesar_archivo(file):
         return {"status": "success", "filename": lista_datos}
     
     return {"status":"error", "error": "No se encontró archivo en la petición"}
-
 
 
 @routes.route('/cargar_datos_archivo', methods=['POST', 'GET'])
