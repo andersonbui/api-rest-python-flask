@@ -1,87 +1,16 @@
 #!/usr/bin/env python
 
-import json
+from flask import request, jsonify, Blueprint
 
-from flask import request, jsonify, Blueprint, current_app
-# from pymongo import MongoClient
-from app.processors.FabricaProcessor import FabricaProcessor
-from app.processors.FileProcessor import FileProcessor
-from app.services.data_enricher import DataEnricher
 from app.db.data_storage import DataStorage
-
-ALLOWED_EXTENSIONS = set(['xls', 'csv', 'text', 'jsonl'])
+from app.services.data_enricher import DataEnricher
+from app.services.procesar_archivo import ProcesarArchivo
 
 routes = Blueprint("api", __name__, url_prefix="/api/v1/")
-
-
-def getExtension(filename):
-    return filename.rsplit('.', 1)[1].lower()
-
-def allowedFile(filename):
-    return '.' in filename and \
-        getExtension(filename) in ALLOWED_EXTENSIONS
 
 @routes.route('/', methods=[ 'GET' ])
 def todo():
     return "API en funcionamiento"
-
-
-def query_external_api(row_list):
-    for data in row_list:
-        enricher = DataEnricher()
-        enricher.enrich(data)
-    return row_list
-
-
-def procesar_archivo(file):
-    """
-        Summary:
-        Almacena archivos cargados de forma segura.
-
-        Explanation:
-        Almacena los archivos cargados de forma segura. Comprueba las extensiones de archivo, crea una carpeta de carga si no existe y guarda el archivo.
-        Devuelve un estado de éxito si se almacena el archivo; de lo contrario, devuelve un mensaje de error.
-            
-        Args:
-        - file: El archivo cargado por la petición HTTP
-
-        Returns:
-        - Respuesta JSON con estado "éxito" si el archivo está almacenado, o con estado "error" y mensaje de error si hay problemas.
-    """
-    
-    # lista_datos = []
-    fdataStorage = DataStorage()
-    
-    for f in file:
-        if not allowedFile(f.filename):
-            extension = f.filename.split('.')[1].upper()
-            extensiones_permitidas = ', '.join(ALLOWED_EXTENSIONS)
-            return {"status": "error", "error": f"Extension {extension} no permitida. Solo se permiten {extensiones_permitidas}"}
-        
-        try:
-            chunk_size = 100 * 1
-            #file_stream = io.StringIO(f.stream.read().decode('utf-8'))
-            un_processor = FabricaProcessor.get_strategy(getExtension(f.filename))
-            processor = FileProcessor(un_processor)
-            for row in processor.process_file_in_chunks(f.stream, chunk_size):
-                print(row)
-                if(row == "" or row is None or row == []):
-                    continue
-                
-                result_api = query_external_api(row)
-                data = fdataStorage.almacenar_lista_datos(result_api)
-                
-                # print("result_api:"+str(result_api))
-                # lista_datos.append(
-                #     json.loads(json.dumps(result_api, default=lambda o: None))
-                # )
-            
-        except Exception as e:
-            return {"status": "error", "error": str(e)}
-        
-        return {"status": "success"}
-    
-    return {"status":"error", "error": "No se encontró archivo en la petición"}
 
 
 @routes.route('/cargar_datos_archivo', methods=['POST', 'GET'])
@@ -105,7 +34,12 @@ def cargar_datos():
         return jsonify({"status": "Ejecución de API GET" }), 400
     
     file = request.files.getlist('files')
-    resultado = procesar_archivo(file)
+    
+    
+    dataStorage = DataStorage()
+    enricher = DataEnricher()
+    procesarArchivo = ProcesarArchivo(dataStorage, enricher)
+    resultado = procesarArchivo.run(file)
     if resultado and resultado["status"] == "error":
         return jsonify(resultado), 400
     

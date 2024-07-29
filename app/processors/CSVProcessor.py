@@ -4,13 +4,13 @@ from flask import current_app as app
 
 class CSVProcessor(FileProcessorStrategy):
     
-    headers = None
+    _headers = None
     
     def process(self, chunk, incomplete_line, index_chunk):
         lineas = (incomplete_line + chunk).splitlines()
         linea_incompleta = ""
         if(index_chunk == 0):
-            headers = lineas[0].split(app.config['CSV_SEPARATOR'])
+            self._headers = lineas[0].split(app.config['CSV_SEPARATOR'])
             # ignorar cabecera
             lineas = lineas[1:]
         # la ultima linea puede ser incompleta
@@ -19,7 +19,7 @@ class CSVProcessor(FileProcessorStrategy):
             lineas = lineas[:-1]
             
             
-        rows = [ self.linea_csv_a_diccionario(linea, headers) for linea in lineas ]
+        rows = [ self.linea_csv_a_diccionario(linea, self._headers) for linea in lineas ]
 
         return rows, linea_incompleta
     

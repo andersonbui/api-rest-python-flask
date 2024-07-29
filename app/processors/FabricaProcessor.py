@@ -16,6 +16,16 @@ class FabricaProcessor:
         Retorna:
             FileProcessorStrategy: La estrategia de procesador de archivos para el formato especificado, o None si no se encuentra.
     """
+    
+    @staticmethod
+    def getAllowedExtensions():
+        return set(['csv', 'text', 'jsonl'])
+    
+    @staticmethod
+    def allowedFile(filename):
+        extension_archivo = filename.rsplit('.', 1)[1].lower()
+        return '.' in filename and \
+            extension_archivo in FabricaProcessor.getAllowedExtensions()
 
     @staticmethod
     def get_strategy( formato ) -> FileProcessorStrategy:
