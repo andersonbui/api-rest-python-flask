@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import json
+
 from flask import request, jsonify, Blueprint, current_app
 # from pymongo import MongoClient
 from app.processors.FabricaProcessor import FabricaProcessor
@@ -19,14 +21,9 @@ def allowedFile(filename):
     return '.' in filename and \
         getExtension(filename) in ALLOWED_EXTENSIONS
 
-# @routes.route('/', methods=[ 'GET' ])
-# def todo():
-#     db = None
-#     try:
-#         db = current_app.config['db']
-#     except:
-#         return "Servicio no disponible"
-#     return "API en funcionamiento"
+@routes.route('/', methods=[ 'GET' ])
+def todo():
+    return "API en funcionamiento"
 
 
 def query_external_api(row_list):
@@ -52,8 +49,7 @@ def procesar_archivo(file):
         - Respuesta JSON con estado "éxito" si el archivo está almacenado, o con estado "error" y mensaje de error si hay problemas.
     """
     
-    # filename = "-"
-    lista_datos = []
+    # lista_datos = []
     fdataStorage = DataStorage()
     
     for f in file:
@@ -75,16 +71,15 @@ def procesar_archivo(file):
                 result_api = query_external_api(row)
                 data = fdataStorage.almacenar_lista_datos(result_api)
                 
-                lista_datos.append({
-                    "row": result_api
-                })
-                break #TODO
+                # print("result_api:"+str(result_api))
+                # lista_datos.append(
+                #     json.loads(json.dumps(result_api, default=lambda o: None))
+                # )
             
         except Exception as e:
             return {"status": "error", "error": str(e)}
-    
         
-        return {"status": "success", "filename": lista_datos}
+        return {"status": "success"}
     
     return {"status":"error", "error": "No se encontró archivo en la petición"}
 

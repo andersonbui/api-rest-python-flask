@@ -10,7 +10,7 @@ class DataStorage:
         database = current_app.config['db']
         lista_result = []
         for item_data in data:
-            print("item_data:"+str(item_data))
+            # print(f"item_data:{str(item_data)}")
             lista_result.append(database[self._collection].insert_one(item_data))
         return lista_result
         
