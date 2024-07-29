@@ -1,14 +1,10 @@
 #!/usr/bin/env python
-import os
-import io
-import requests
 
 from flask import request, jsonify, Blueprint, current_app
+import requests
 # from pymongo import MongoClient
-from werkzeug.utils import secure_filename
 from app.processors.FabricaProcessor import FabricaProcessor
 from app.processors.FileProcessor import FileProcessor
-from app.processors.CSVProcessor import CSVProcessor
 
 ALLOWED_EXTENSIONS = set(['xls', 'csv', 'text', 'jsonl'])
 
@@ -31,10 +27,13 @@ def todo():
         return "Server not available"
     return "Collecciones de bbd: " + str(db.list_collection_names())
 
-def query_external_api(data):
-    api_url = "https://webhook.site/cd6880ef-8705-47f4-a00b-770a41a60ffb"
-    #response = requests.post(api_url, json=data)
-    #return response
+def query_external_api(row_list):
+    for data in row_list:
+        api_url = f"https://dominio.com/items/{data['site']+data['id']}"
+        response = requests.get(api_url)
+        print("response"+str(response.json()))
+        return {"status": "success"}
+
 
 def procesar_archivo(file):
     """
@@ -69,9 +68,13 @@ def procesar_archivo(file):
                 print(row)
                 if(row == "" or row is None or row == []):
                     continue
-                query_external_api(row)
-                lista_datos.append(row)
-                #break
+                result_api = query_external_api(row)
+                lista_datos.append({
+                    "row": row,
+                    "result_api": result_api
+                })
+                break #TODO
+            
         except Exception as e:
             return {"status": "error", "error": str(e)}
     
