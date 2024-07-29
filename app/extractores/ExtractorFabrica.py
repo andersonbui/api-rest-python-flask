@@ -1,9 +1,9 @@
-from app.processors import FileProcessorStrategy
-from app.processors.CSVProcessor import CSVProcessor
-from app.processors.JSONLProcessor import JSONLProcessor
+from app.processors import ExtractorFileStrategy
+from app.extractores.ExtractorCSV import ExtractorCSV
+from app.extractores.ExtractorJSONL import ExtractorJSONL
 
 
-class FabricaProcessor:
+class ExtractorFabrica:
     """
         Una clase de fábrica para crear estrategias de procesador de archivos basadas en el formato de archivo.
 
@@ -19,19 +19,19 @@ class FabricaProcessor:
     
     @staticmethod
     def getAllowedExtensions():
-        return set(['csv', 'text', 'jsonl'])
+        return {'csv', 'text', 'jsonl'}
     
     @staticmethod
     def allowedFile(filename):
         extension_archivo = filename.rsplit('.', 1)[1].lower()
         return '.' in filename and \
-            extension_archivo in FabricaProcessor.getAllowedExtensions()
+            extension_archivo in ExtractorFabrica.getAllowedExtensions()
 
     @staticmethod
-    def get_strategy( formato ) -> FileProcessorStrategy:
+    def get_strategy( formato ) -> ExtractorFileStrategy:
         if formato == "csv":
-            return CSVProcessor()
+            return ExtractorCSV()
         elif formato == "jsonl":
-            return JSONLProcessor()
+            return ExtractorJSONL()
         else:
             return None

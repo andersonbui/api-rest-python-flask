@@ -1,9 +1,9 @@
 import json
-from app.processors.FileProcessorStrategy import FileProcessorStrategy
+from app.extractores.ExtractorFileStrategy import ExtractorFileStrategy
 
-class JSONLProcessor(FileProcessorStrategy):
+class ExtractorJSONL(ExtractorFileStrategy):
     
-    def process(self, chunk, incomplete_line, index_chunk):
+    def extraer(self, chunk, incomplete_line, index_chunk):
         lineas = (incomplete_line + chunk).splitlines()
         linea_incompleta = ""
         # la ultima linea puede ser incompleta

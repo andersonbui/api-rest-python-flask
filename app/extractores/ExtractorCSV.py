@@ -1,12 +1,12 @@
-from app.processors.FileProcessorStrategy import FileProcessorStrategy
+from app.extractores.ExtractorFileStrategy import ExtractorFileStrategy
 from flask import current_app as app
 
 
-class CSVProcessor(FileProcessorStrategy):
+class ExtractorCSV(ExtractorFileStrategy):
     
     _headers = None
     
-    def process(self, chunk, incomplete_line, index_chunk):
+    def extraer(self, chunk, incomplete_line, index_chunk):
         lineas = (incomplete_line + chunk).splitlines()
         linea_incompleta = ""
         if(index_chunk == 0):

@@ -1,7 +1,7 @@
-class FileProcessorStrategy:
+class ExtractorFileStrategy:
     
     def __init__(self):
         pass
 
-    def process(self, chunk, incomplete_line, index_chunk):
+    def extraer(self, chunk, incomplete_line, index_chunk):
         raise NotImplementedError("Method not implemented")

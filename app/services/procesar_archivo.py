@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from app.processors.FabricaProcessor import FabricaProcessor
-from app.processors.FileProcessor import FileProcessor
+from app.extractores.ExtractorFabrica import ExtractorFabrica
+from app.extractores.ExtractorFile import ExtractorGenericoArchivo
 
 
 
@@ -62,9 +62,9 @@ class ProcesarArchivo:
         
         for f in file:
             # NO procesar archivo si la extension no es permitida
-            if not FabricaProcessor.allowedFile(f.filename):
+            if not ExtractorFabrica.allowedFile(f.filename):
                 extension = f.filename.split('.')[1].upper()
-                extensiones_permitidas = ', '.join(FabricaProcessor.getAllowedExtensions())
+                extensiones_permitidas = ', '.join(ExtractorFabrica.getAllowedExtensions())
                 return {"status": "error", "error": f"Extension {extension} no permitida. Solo se permiten {extensiones_permitidas}"}
             
             try:
@@ -73,8 +73,8 @@ class ProcesarArchivo:
                 # extraer extension de archivo
                 extension_archivo = f.filename.rsplit('.', 1)[1].lower()
                 # obtener estrategia de acuerdo a extensión
-                un_processor = FabricaProcessor.get_strategy(extension_archivo)
-                processor = FileProcessor(un_processor)
+                un_processor = ExtractorFabrica.get_strategy(extension_archivo)
+                processor = ExtractorGenericoArchivo(un_processor)
                 for row in processor.process_file_in_chunks(f.stream, chunk_size):
                     # no procesar si la fila es vacía
                     if(row == "" or row is None or row == []):

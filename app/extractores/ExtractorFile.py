@@ -1,6 +1,6 @@
 import io
 
-class FileProcessor:
+class ExtractorGenericoArchivo:
     
     def __init__(self, strategy):
         self.strategy = strategy
