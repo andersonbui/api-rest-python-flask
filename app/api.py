@@ -6,16 +6,21 @@ import requests
 from flask import request, jsonify, Blueprint, current_app
 # from pymongo import MongoClient
 from werkzeug.utils import secure_filename
+from app.formatos_archivos.FabricaProcessor import FabricaProcessor
 from app.formatos_archivos.FileProcessor import FileProcessor
 from app.formatos_archivos.CSVProcessor import CSVProcessor
 
-ALLOWED_EXTENSIONS = set(['xls', 'csv', 'png', 'jpeg', 'jpg'])
+ALLOWED_EXTENSIONS = set(['xls', 'csv', 'text', 'jsonl'])
 
 routes = Blueprint("api", __name__, url_prefix="/api/v1/")
 
+
+def getExtension(filename):
+    return filename.rsplit('.', 1)[1].lower()
+
 def allowedFile(filename):
     return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        getExtension(filename) in ALLOWED_EXTENSIONS
 
 @routes.route('/', methods=[ 'GET' ])
 def todo():
@@ -28,8 +33,8 @@ def todo():
 
 def query_external_api(data):
     api_url = "https://webhook.site/cd6880ef-8705-47f4-a00b-770a41a60ffb"
-    response = requests.post(api_url, json=data)
-    return response
+    #response = requests.post(api_url, json=data)
+    #return response
 
 def almacenar_archivo(file):
     """
@@ -50,21 +55,25 @@ def almacenar_archivo(file):
     # filename = "-"
     lista_datos = []
     for f in file:
-        if f and f.filename.endswith(tuple(ALLOWED_EXTENSIONS)):
-            try:
-                chunk_size = 100 * 1
-                #file_stream = io.StringIO(f.stream.read().decode('utf-8'))
-                
-                processor = FileProcessor(CSVProcessor())
-                for row in processor.process_file_in_chunks(f.stream, chunk_size):
-                    print(row)
-                    if(row == "" or row is None or row == []):
-                        continue
-                    query_external_api(row)
-                    lista_datos.append(row)
-                    #break
-            except Exception as e:
-                return {"status": "error", "error": str(e)}
+        if not allowedFile(f.filename):
+            extension = f.filename.split('.')[1].upper()
+            extensiones_permitidas = ', '.join(ALLOWED_EXTENSIONS)
+            return {"status": "error", "error": f"Extension {extension} no permitida. Solo se permiten {extensiones_permitidas}"}
+        
+        try:
+            chunk_size = 100 * 1
+            #file_stream = io.StringIO(f.stream.read().decode('utf-8'))
+            un_processor = FabricaProcessor.get_strategy(getExtension(f.filename))
+            processor = FileProcessor(un_processor)
+            for row in processor.process_file_in_chunks(f.stream, chunk_size):
+                print(row)
+                if(row == "" or row is None or row == []):
+                    continue
+                query_external_api(row)
+                lista_datos.append(row)
+                #break
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
     
         
         return {"status": "success", "filename": lista_datos}

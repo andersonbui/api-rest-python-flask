@@ -1,7 +1,7 @@
+import json
 from app.formatos_archivos.FileProcessorStrategy import FileProcessorStrategy
-from flask import current_app as app
 
-class CSVProcessor(FileProcessorStrategy):
+class JSONLProcessor(FileProcessorStrategy):
     
     def process(self, chunk, incomplete_line):
         lineas = (incomplete_line + chunk).splitlines()
@@ -10,6 +10,6 @@ class CSVProcessor(FileProcessorStrategy):
         if lineas[-1][-1] != '\n':
             linea_incompleta = lineas[-1]
             lineas = lineas[:-1]
-        rows = [ linea.split(app.config['CSV_SEPARATOR']) for linea in lineas ]
+        rows = [ list(json.loads(linea).values()) for linea in lineas if linea ]
 
         return rows, linea_incompleta

@@ -4,7 +4,7 @@ class MongoBDClient():
     _instance = None
     
     def __new__(cls, uri, db_name):
-        if cls._instance == None :
+        if cls._instance is None :
             cls._instance = super(MongoBDClient, cls).__new__(cls)
             cls._instance._initialize(uri, db_name)
         return cls._instance
