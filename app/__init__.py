@@ -12,6 +12,16 @@ from flask import Flask
 from app.api import routes
 
 def create_app(test_config=None):
+    """
+        Create and configure the Flask application.
+        Info: https://flask.palletsprojects.com/es/main/tutorial/factory/
+        
+        Args:
+            test_config (dict, optional): Configuration settings for testing purposes. Defaults to None.
+
+        Returns:
+            Flask: The configured Flask application.
+    """
     
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
