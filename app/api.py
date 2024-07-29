@@ -36,7 +36,7 @@ def query_external_api(data):
     #response = requests.post(api_url, json=data)
     #return response
 
-def almacenar_archivo(file):
+def procesar_archivo(file):
     """
         Summary:
         Almacena archivos cargados de forma segura.
@@ -79,31 +79,6 @@ def almacenar_archivo(file):
         return {"status": "success", "filename": lista_datos}
     
     return {"status":"error", "error": "No se encontró archivo en la petición"}
-
-def procesar_archivo_grande_por_fragmentos(file):
-    """
-        Summary:
-        Procesa un archivo de forma segura.
-
-        Explanation:
-        Procesa un archivo de forma segura. Carga el archivo de la base de datos y lo procesa. Devuelve un estado de validez si se procesa el archivo; de lo contrario, devuelve un mensaje de error.  
-
-        Args:
-        - filename: El archivo cargado por la petición HTTP
-
-        Returns:
-        - Respuesta JSON con estado "éxito" si el archivo está procesado, o con estado "error" y mensaje de error si hay problemas.
-    """
-    try:
-        chunk_size = 1024 * 1024
-        file_stream = io.StringIO(file.stream.read().decode('utf-8'))
-        
-        
-        
-                
-        return {"status": "success"}
-    except Exception as e:
-        return {"status": "error", "error": str(e)}
     
 
 @routes.route('/cargar_datos_archivo', methods=['POST', 'GET'])
@@ -127,13 +102,10 @@ def cargar_datos():
         return jsonify({"status": "Ejecución de API GET" }), 400
     
     file = request.files.getlist('files')
-    resultado = almacenar_archivo(file)
+    resultado = procesar_archivo(file)
     if resultado and resultado["status"] == "error":
         return jsonify(resultado), 400
     
-    filename = resultado["filename"]
-    #procesar_archivo(app.config['UPLOAD_FOLDER'] + '/' + filename)
-
     return jsonify(resultado), 200
 
 

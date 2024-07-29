@@ -18,7 +18,6 @@ def create_app(test_config=None):
         SECRET_KEY=os.environ.get('FLASK_SECRET_KEY'),
         MONGODB_STRING_CONNECTION=os.environ.get('MONGODB_STRING_CONNECTION'),
         MONGODB_DATABASE_NAME=os.environ.get('MONGODB_DATABASE_NAME'),
-        UPLOAD_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), '../uploads')),
         MAX_CONTENT_LENGTH = 100000 * 1000 * 1000,  # 100000 MB
         CORS_HEADER = 'application/json',
         TESTING  = True,
