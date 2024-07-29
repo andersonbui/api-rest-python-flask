@@ -5,21 +5,41 @@ from app.processors.FileProcessor import FileProcessor
 
 
 class ProcesarArchivo:
+    """
+        Summary:
+        Extrae los datos de un archivo, los enriquece y los almacena en una base de datos.
+
+        Explanation:
+        Comprueba las extensiones de archivo, extrae los datos del archivo permitido, los enriquece y los almacena en una base de datos.
+        Args:
+        - file: Objeto que representa un archivo para procesar.
+
+        Returns:
+        - Respuesta JSON con estado "éxito" si el archivo está completamente procesado, o con estado "error" y mensaje de error si hay problemas.
+    """
     
-            # lista_datos = []
-    _dataStorage = None
+    _data_storage = None
     _enricher = None
     
-    def __init__(self, dataStorage, enricher):
-        self._dataStorage = dataStorage
+    def __init__(self, data_storage, enricher):
+        self._data_storage = data_storage
         self._enricher = enricher
     
-    @staticmethod
-    def getExtension(filename):
-        return filename.rsplit('.', 1)[1].lower()
 
+    def enriquecer_datos(self, row_list):
+        """
+            Summary:
+            Enriquecimiento de datos basado en un objeto decorador.
 
-    def query_external_api(self, row_list):
+            Explanation:
+            Itera sobre una lista de datos y los enriquece cada dato utilizando un enriquecedor externo. Devuelve la lista de datos enriquecida.
+
+            Args:
+            - row_list: Lista de datos a ser enriquecidos
+
+            Returns:
+            - La lista de datos enriquecida con datos adicionales agregados por objeto decorador
+        """
         for data in row_list:
             self._enricher.enrich(data)
         return row_list
@@ -41,24 +61,28 @@ class ProcesarArchivo:
         """
         
         for f in file:
+            # NO procesar archivo si la extension no es permitida
             if not FabricaProcessor.allowedFile(f.filename):
                 extension = f.filename.split('.')[1].upper()
                 extensiones_permitidas = ', '.join(FabricaProcessor.getAllowedExtensions())
                 return {"status": "error", "error": f"Extension {extension} no permitida. Solo se permiten {extensiones_permitidas}"}
             
             try:
-                chunk_size = 100 * 1
-                #file_stream = io.StringIO(f.stream.read().decode('utf-8'))
+                # tamaño del segmento de archivo
+                chunk_size = 10 * 1024
+                # extraer extension de archivo
                 extension_archivo = f.filename.rsplit('.', 1)[1].lower()
+                # obtener estrategia de acuerdo a extensión
                 un_processor = FabricaProcessor.get_strategy(extension_archivo)
                 processor = FileProcessor(un_processor)
                 for row in processor.process_file_in_chunks(f.stream, chunk_size):
-                    print(row)
+                    # no procesar si la fila es vacía
                     if(row == "" or row is None or row == []):
                         continue
                     
-                    result_api = self.query_external_api(row)
-                    data = self._dataStorage.almacenar_lista_datos(result_api)
+                    result_api = self.enriquecer_datos(row)
+                    # Almacenar datos enriquecidos
+                    self._data_storage.almacenar_lista_datos(result_api)
                     
                     # print("result_api:"+str(result_api))
                     # lista_datos.append(
