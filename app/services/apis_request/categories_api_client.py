@@ -1,7 +1,7 @@
 
 import requests
 
-from app.services.apis_request.base_api_clients import BaseAPIClient
+from app.services.base_api_clients import BaseAPIClient
 
 class CategoryInfoAPIClient(BaseAPIClient):
     

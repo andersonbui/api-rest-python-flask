@@ -4,7 +4,7 @@ from flask import request, jsonify, Blueprint, current_app
 # from pymongo import MongoClient
 from app.processors.FabricaProcessor import FabricaProcessor
 from app.processors.FileProcessor import FileProcessor
-from app.services.apis_request.data_enricher import DataEnricher
+from app.services.data_enricher import DataEnricher
 
 ALLOWED_EXTENSIONS = set(['xls', 'csv', 'text', 'jsonl'])
 
