@@ -22,6 +22,7 @@ def create_app(test_config=None):
         MAX_CONTENT_LENGTH = 100000 * 1000 * 1000,  # 100000 MB
         CORS_HEADER = 'application/json',
         TESTING  = True,
+        CSV_SEPARATOR  = os.environ.get('CSV_SEPARATOR', ',')
     )
 
     if test_config is None:

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 import os
 import io
+import requests
 
 from flask import request, jsonify, Blueprint, current_app
 # from pymongo import MongoClient
 from werkzeug.utils import secure_filename
+from app.formatos_archivos.FileProcessor import FileProcessor
+from app.formatos_archivos.CSVProcessor import CSVProcessor
 
 ALLOWED_EXTENSIONS = set(['xls', 'csv', 'png', 'jpeg', 'jpg'])
 
@@ -23,6 +26,10 @@ def todo():
         return "Server not available"
     return "Collecciones de bbd: " + str(db.list_collection_names())
 
+def query_external_api(data):
+    api_url = "https://webhook.site/cd6880ef-8705-47f4-a00b-770a41a60ffb"
+    response = requests.post(api_url, json=data)
+    return response
 
 def almacenar_archivo(file):
     """
@@ -40,19 +47,27 @@ def almacenar_archivo(file):
         - Respuesta JSON con estado "éxito" si el archivo está almacenado, o con estado "error" y mensaje de error si hay problemas.
     """
     
-    filename = "-"
+    # filename = "-"
+    lista_datos = []
     for f in file:
-        filename = secure_filename(f.filename)
-        if not allowedFile(filename):
-            extension = filename.split('.')[1].upper()
-            extensiones_permitidas = ', '.join(ALLOWED_EXTENSIONS)
-            return {"status": "error", "error": f"Extension {extension} no permitida. Solo se permiten {extensiones_permitidas}"}
-
-        if not os.path.exists(current_app.config['UPLOAD_FOLDER']):
-            os.makedirs(current_app.config['UPLOAD_FOLDER'])
-
-        f.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-        return {"status": "success", "filename": filename}
+        if f and f.filename.endswith(tuple(ALLOWED_EXTENSIONS)):
+            try:
+                chunk_size = 100 * 1
+                #file_stream = io.StringIO(f.stream.read().decode('utf-8'))
+                
+                processor = FileProcessor(CSVProcessor())
+                for row in processor.process_file_in_chunks(f.stream, chunk_size):
+                    print(row)
+                    if(row == "" or row is None or row == []):
+                        continue
+                    query_external_api(row)
+                    lista_datos.append(row)
+                    #break
+            except Exception as e:
+                return {"status": "error", "error": str(e)}
+    
+        
+        return {"status": "success", "filename": lista_datos}
     
     return {"status":"error", "error": "No se encontró archivo en la petición"}
 
