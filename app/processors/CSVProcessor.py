@@ -1,4 +1,4 @@
-from app.formatos_archivos.FileProcessorStrategy import FileProcessorStrategy
+from app.processors.FileProcessorStrategy import FileProcessorStrategy
 from flask import current_app as app
 
 class CSVProcessor(FileProcessorStrategy):

@@ -1,5 +1,5 @@
 import json
-from app.formatos_archivos.FileProcessorStrategy import FileProcessorStrategy
+from app.processors.FileProcessorStrategy import FileProcessorStrategy
 
 class JSONLProcessor(FileProcessorStrategy):
     

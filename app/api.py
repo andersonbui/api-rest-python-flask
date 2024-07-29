@@ -6,9 +6,9 @@ import requests
 from flask import request, jsonify, Blueprint, current_app
 # from pymongo import MongoClient
 from werkzeug.utils import secure_filename
-from app.formatos_archivos.FabricaProcessor import FabricaProcessor
-from app.formatos_archivos.FileProcessor import FileProcessor
-from app.formatos_archivos.CSVProcessor import CSVProcessor
+from app.processors.FabricaProcessor import FabricaProcessor
+from app.processors.FileProcessor import FileProcessor
+from app.processors.CSVProcessor import CSVProcessor
 
 ALLOWED_EXTENSIONS = set(['xls', 'csv', 'text', 'jsonl'])
 

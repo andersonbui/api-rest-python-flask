@@ -1,6 +1,6 @@
-from app.formatos_archivos import FileProcessorStrategy
-from app.formatos_archivos.CSVProcessor import CSVProcessor
-from app.formatos_archivos.JSONLProcessor import JSONLProcessor
+from app.processors import FileProcessorStrategy
+from app.processors.CSVProcessor import CSVProcessor
+from app.processors.JSONLProcessor import JSONLProcessor
 
 
 class FabricaProcessor:
