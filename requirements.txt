@@ -1,5 +1,8 @@
-pymongo
-flask
-python-dotenv
-pylint
-requests
+Flask==3.0.3
+Jinja2==3.1.4
+pylint==3.2.6
+pymongo==4.8.0
+pytest==8.3.2
+python-dotenv==1.0.1
+requests==2.32.3
+Werkzeug==3.0.3

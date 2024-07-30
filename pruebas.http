@@ -1,0 +1,11 @@
+###
+curl --request POST --url http://localhost:5000/api/v1/cargar_datos_archivo \
+    --header 'Content-Type: multipart/form-data' \
+    --form files=@/opt/projects/prefect/ejemplo_flask/data_mini.csv
+
+###
+curl --request POST \
+    --url http://localhost:5000/api/v1/cargar_datos_archivo \
+    --header 'Content-Type: multipart/form-data' \
+    --form files=@/opt/projects/prefect/ejemplo_flask/data_mini.json
+
