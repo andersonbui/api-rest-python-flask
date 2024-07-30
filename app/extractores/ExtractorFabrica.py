@@ -1,4 +1,4 @@
-from app.processors import ExtractorFileStrategy
+from app.extractores import ExtractorFileStrategy
 from app.extractores.ExtractorCSV import ExtractorCSV
 from app.extractores.ExtractorJSONL import ExtractorJSONL
 
