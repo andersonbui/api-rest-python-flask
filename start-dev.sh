@@ -1,7 +1,7 @@
-. .venv/bin/activate
 if [ ! -d ".venv" ]; then
     python3 -m venv .venv
 fi
+. .venv/bin/activate
 sha256sum -c req-SHA256SUMS
 if [ $? == "0" ]; then
     echo "requirements.txt sin cambios"
